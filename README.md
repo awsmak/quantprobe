@@ -2,7 +2,7 @@
 
 Diagnose why your quantized ONNX model broke — and how to fix it.
 
-> 🚧 Under active development. First release coming soon.
+> Under active development. First release coming soon.
 
 ## What it will do
 
