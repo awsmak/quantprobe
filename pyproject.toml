@@ -55,7 +55,7 @@ testpaths = ["tests"]
 addopts = "-v"
 
 [tool.coverage.run]
-source_pkgs = ["quantprobe"]
+source = ["src/quantprobe"]
 
 [tool.ruff]
 src = ["src"]

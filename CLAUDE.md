@@ -91,6 +91,7 @@ CLI commands will be added to this section as they are implemented.
 - No wildcard imports
 - No mutable default arguments (use `None` and assign in body)
 - No `# type: ignore` without a comment explaining why
+- No non-ASCII characters in code, comments, docstrings, or string literals. Use `->` not arrows, `<=` not less-than-or-equal symbols, plain `"` and `'` for quotes. If a character cannot be typed on a standard US keyboard, it does not belong in source files.
 
 ## Git Workflow
 
