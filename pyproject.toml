@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantprobe"
+version = "0.1.0"
+description = "Diagnose why your quantized ONNX model broke — and how to fix it."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Akash Ashokan", email = "akash.47.de@gmail.com" }]
+keywords = ["onnx", "quantization", "model-analysis", "mlops", "inference"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "onnx>=1.14",
+    "onnxruntime>=1.16",
+    "numpy>=1.24",
+    "Pillow>=9.0",
+    "typer>=0.9",
+    "rich>=13.0",
+    "plotly>=5.18",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+quantprobe = "quantprobe.cli:app"
+
+[project.urls]
+Repository = "https://github.com/awsmak/quantprobe"
+Issues = "https://github.com/awsmak/quantprobe/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.coverage.run]
+source_pkgs = ["quantprobe"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
