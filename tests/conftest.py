@@ -25,15 +25,12 @@ def _make_relu_model() -> onnx.ModelProto:
     Shape [1, 4] is deliberately small so tests run in microseconds.
     Four features gives enough elements to exercise metrics meaningfully.
     """
-    X = onnx.helper.make_tensor_value_info(
-        "input", onnx.TensorProto.FLOAT, [1, 4]
-    )
-    Y = onnx.helper.make_tensor_value_info(
-        "output", onnx.TensorProto.FLOAT, [1, 4]
-    )
+    X = onnx.helper.make_tensor_value_info("input", onnx.TensorProto.FLOAT, [1, 4])
+    Y = onnx.helper.make_tensor_value_info("output", onnx.TensorProto.FLOAT, [1, 4])
     node = onnx.helper.make_node("Relu", inputs=["input"], outputs=["output"])
     graph = onnx.helper.make_graph([node], "relu_graph", inputs=[X], outputs=[Y])
     model = onnx.helper.make_model(graph)
+    model.ir_version = 9
     model.opset_import[0].version = 17
     onnx.checker.check_model(model)
     return model
@@ -47,22 +44,15 @@ def _make_two_node_model() -> onnx.ModelProto:
     Used to test that activation_collector can expose intermediate tensors
     (the hidden tensor between the two nodes is not a graph output by default).
     """
-    X = onnx.helper.make_tensor_value_info(
-        "input", onnx.TensorProto.FLOAT, [1, 4]
-    )
-    Y = onnx.helper.make_tensor_value_info(
-        "output", onnx.TensorProto.FLOAT, [1, 4]
-    )
-    relu_node = onnx.helper.make_node(
-        "Relu", inputs=["input"], outputs=["hidden"]
-    )
-    sigmoid_node = onnx.helper.make_node(
-        "Sigmoid", inputs=["hidden"], outputs=["output"]
-    )
+    X = onnx.helper.make_tensor_value_info("input", onnx.TensorProto.FLOAT, [1, 4])
+    Y = onnx.helper.make_tensor_value_info("output", onnx.TensorProto.FLOAT, [1, 4])
+    relu_node = onnx.helper.make_node("Relu", inputs=["input"], outputs=["hidden"])
+    sigmoid_node = onnx.helper.make_node("Sigmoid", inputs=["hidden"], outputs=["output"])
     graph = onnx.helper.make_graph(
         [relu_node, sigmoid_node], "two_node_graph", inputs=[X], outputs=[Y]
     )
     model = onnx.helper.make_model(graph)
+    model.ir_version = 9
     model.opset_import[0].version = 17
     onnx.checker.check_model(model)
     return model

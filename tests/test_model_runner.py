@@ -59,9 +59,7 @@ class TestModelRunnerProperties:
 class TestModelRunnerInference:
     """ModelRunner.run: input validation and output correctness."""
 
-    def test_run_returns_dict(
-        self, relu_model_path: Path, relu_input: np.ndarray
-    ) -> None:
+    def test_run_returns_dict(self, relu_model_path: Path, relu_input: np.ndarray) -> None:
         runner = ModelRunner(relu_model_path)
         result = runner.run({"input": relu_input})
         assert isinstance(result, dict)
@@ -80,9 +78,7 @@ class TestModelRunnerInference:
         result = runner.run({"input": relu_input})
         assert all(isinstance(v, np.ndarray) for v in result.values())
 
-    def test_relu_zeroes_negatives(
-        self, relu_model_path: Path, relu_input: np.ndarray
-    ) -> None:
+    def test_relu_zeroes_negatives(self, relu_model_path: Path, relu_input: np.ndarray) -> None:
         # relu_input is [1, -2, 3, -4]. Relu sets negatives to zero.
         # Expected: [1, 0, 3, 0].
         runner = ModelRunner(relu_model_path)
@@ -90,9 +86,7 @@ class TestModelRunnerInference:
         expected = np.array([[1.0, 0.0, 3.0, 0.0]], dtype=np.float32)
         np.testing.assert_array_equal(result["output"], expected)
 
-    def test_wrong_input_name_raises(
-        self, relu_model_path: Path, relu_input: np.ndarray
-    ) -> None:
+    def test_wrong_input_name_raises(self, relu_model_path: Path, relu_input: np.ndarray) -> None:
         # Model expects "input", we pass "images" -- should fail with our error,
         # not a raw ORT exception.
         runner = ModelRunner(relu_model_path)
