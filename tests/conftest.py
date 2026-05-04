@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import onnx
 import onnx.helper
+import onnx.shape_inference
 import pytest
 
 
@@ -76,6 +77,26 @@ def two_node_model_path(tmp_path: Path) -> Path:
     path = tmp_path / "two_node.onnx"
     onnx.save(_make_two_node_model(), str(path))
     return path
+
+
+@pytest.fixture
+def relu_model() -> onnx.ModelProto:
+    """Shape-inferred ModelProto for the single-node Relu model.
+
+    Used by activation_collector tests which accept a ModelProto directly
+    rather than a path.
+    """
+    return onnx.shape_inference.infer_shapes(_make_relu_model())
+
+
+@pytest.fixture
+def two_node_model() -> onnx.ModelProto:
+    """Shape-inferred ModelProto for the two-node Relu -> Sigmoid model.
+
+    The intermediate tensor 'hidden' is annotated by shape inference but is
+    not yet a graph output -- activation_collector must promote it.
+    """
+    return onnx.shape_inference.infer_shapes(_make_two_node_model())
 
 
 @pytest.fixture
