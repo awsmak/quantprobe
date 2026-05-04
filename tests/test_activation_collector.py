@@ -7,8 +7,6 @@ Run a single class with::
 
 from __future__ import annotations
 
-import copy
-
 import numpy as np
 import onnx
 import pytest
@@ -112,9 +110,7 @@ class TestErrorHandling:
         with pytest.raises(SensitivityError):
             collect(two_node_model, {"wrong_name": relu_input})
 
-    def test_wrong_input_shape_raises(
-        self, two_node_model: onnx.ModelProto
-    ) -> None:
+    def test_wrong_input_shape_raises(self, two_node_model: onnx.ModelProto) -> None:
         wrong_shape = np.ones((1, 99), dtype=np.float32)
         with pytest.raises(SensitivityError):
             collect(two_node_model, {"input": wrong_shape})
