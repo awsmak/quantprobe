@@ -54,18 +54,26 @@ def _make_matmul_model() -> onnx.ModelProto:
         data_type=onnx.TensorProto.FLOAT,
         dims=[4, 3],
         vals=[
-            0.1, 0.2, 0.3,
-            0.4, 0.5, 0.6,
-            0.7, 0.8, 0.9,
-            1.0, 1.1, 1.2,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
         ],
     )
-    matmul = onnx.helper.make_node(
-        "MatMul", inputs=["input", "weights"], outputs=["output"]
-    )
+    matmul = onnx.helper.make_node("MatMul", inputs=["input", "weights"], outputs=["output"])
     graph = onnx.helper.make_graph(
-        [matmul], "matmul_graph",
-        inputs=[X], outputs=[Y],
+        [matmul],
+        "matmul_graph",
+        inputs=[X],
+        outputs=[Y],
         initializer=[weights],
     )
     model = onnx.helper.make_model(graph)
