@@ -37,6 +37,44 @@ def _make_relu_model() -> onnx.ModelProto:
     return model
 
 
+def _make_matmul_model() -> onnx.ModelProto:
+    """Build a quantizable single-MatMul model.
+
+    Graph:  input [1, 4] @ weights [4, 3] -> output [1, 3]
+
+    Used by quantizer tests because Relu/Sigmoid alone are not quantized
+    by ORT's static quantization -- it only inserts QDQ around Conv,
+    MatMul, and Gemm. The weights are baked in as an initializer so the
+    quantizer can statically quantize them.
+    """
+    X = onnx.helper.make_tensor_value_info("input", onnx.TensorProto.FLOAT, [1, 4])
+    Y = onnx.helper.make_tensor_value_info("output", onnx.TensorProto.FLOAT, [1, 3])
+    weights = onnx.helper.make_tensor(
+        name="weights",
+        data_type=onnx.TensorProto.FLOAT,
+        dims=[4, 3],
+        vals=[
+            0.1, 0.2, 0.3,
+            0.4, 0.5, 0.6,
+            0.7, 0.8, 0.9,
+            1.0, 1.1, 1.2,
+        ],
+    )
+    matmul = onnx.helper.make_node(
+        "MatMul", inputs=["input", "weights"], outputs=["output"]
+    )
+    graph = onnx.helper.make_graph(
+        [matmul], "matmul_graph",
+        inputs=[X], outputs=[Y],
+        initializer=[weights],
+    )
+    model = onnx.helper.make_model(graph)
+    model.ir_version = 9
+    model.opset_import[0].version = 17
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_two_node_model() -> onnx.ModelProto:
     """Build a two-node model: Relu -> Sigmoid.
 
@@ -107,3 +145,21 @@ def relu_input() -> np.ndarray:
     (not all zeros, not all pass-through).
     """
     return np.array([[1.0, -2.0, 3.0, -4.0]], dtype=np.float32)
+
+
+@pytest.fixture
+def matmul_model() -> onnx.ModelProto:
+    """Shape-inferred ModelProto for the quantizable single-MatMul model."""
+    return onnx.shape_inference.infer_shapes(_make_matmul_model())
+
+
+@pytest.fixture
+def matmul_calibration_data() -> np.ndarray:
+    """10 deterministic calibration samples for the MatMul model.
+
+    Shape (10, 4) -- the leading dim is the sample count, each row is one
+    inference input that gets reshaped to [1, 4] (the model's expected
+    input shape) by the calibration reader.
+    """
+    rng = np.random.default_rng(seed=42)
+    return rng.uniform(-1.0, 1.0, size=(10, 4)).astype(np.float32)
