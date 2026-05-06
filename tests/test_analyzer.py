@@ -62,8 +62,9 @@ class TestAnalyseOrchestration:
     def test_returns_analysis_result(
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         assert isinstance(result, AnalysisResult)
@@ -72,10 +73,9 @@ class TestAnalyseOrchestration:
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
         config = QuantizationConfig(per_channel=False)
-        with patch(
-            "quantprobe.analyzer.quantize", return_value=matmul_model
-        ) as mock_quantize, patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model) as mock_quantize,
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             analyse(matmul_model, matmul_calibration_data, "input", config)
         # quantize must have been called once with the explicit config.
@@ -89,8 +89,9 @@ class TestAnalyseOrchestration:
     def test_default_config_used_when_none(
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         assert result.config == QuantizationConfig()
@@ -107,8 +108,9 @@ class TestAnalyseOrchestration:
                 snr_db=20.0,
             )
         ]
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=fake_layers
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=fake_layers),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         assert result.layers == fake_layers
@@ -116,8 +118,9 @@ class TestAnalyseOrchestration:
     def test_result_records_calibration_sample_count(
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         assert result.calibration_sample_count == len(matmul_calibration_data)
@@ -126,8 +129,9 @@ class TestAnalyseOrchestration:
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
         # The matmul fixture's graph is named "matmul_graph".
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         assert result.fp32_model_name == "matmul_graph"
@@ -136,8 +140,9 @@ class TestAnalyseOrchestration:
         self, matmul_model: onnx.ModelProto, matmul_calibration_data: np.ndarray
     ) -> None:
         before = datetime.now()
-        with patch("quantprobe.analyzer.quantize", return_value=matmul_model), patch(
-            "quantprobe.analyzer.run_sensitivity", return_value=[]
+        with (
+            patch("quantprobe.analyzer.quantize", return_value=matmul_model),
+            patch("quantprobe.analyzer.run_sensitivity", return_value=[]),
         ):
             result = analyse(matmul_model, matmul_calibration_data, "input")
         after = datetime.now()
